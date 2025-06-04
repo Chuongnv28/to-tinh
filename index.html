@@ -1,47 +1,44 @@
-<!-- Chạy ngay không cần gì thêm -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Hiệu Ứng Text Tình Yêu</title>
+  <title>Text Xoắn Trụ 3D</title>
   <style>
     body {
       margin: 0;
       background: black;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
+      perspective: 1000px;
+    }
+
+    #cylinder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%) rotateX(0deg);
+      animation: rotateCylinder 20s linear infinite;
     }
 
     .text {
       position: absolute;
-      white-space: nowrap;
-      font-size: 20px;
+      color: #fff;
+      font-size: 24px;
       font-weight: bold;
-      animation: floatText 10s linear infinite;
-      opacity: 0.8;
+      white-space: nowrap;
+      transition: transform 1s, opacity 1s;
     }
 
-    @keyframes floatText {
-      0% { transform: translateY(100vh) scale(1); opacity: 0; }
-      20% { opacity: 1; }
-      100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
-    }
-
-    .heart {
-      position: absolute;
-      color: pink;
-      font-size: 16px;
-      animation: fall 6s linear infinite;
-      opacity: 0.7;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+    @keyframes rotateCylinder {
+      0%   { transform: translate(-50%, -50%) rotateY(0deg); }
+      100% { transform: translate(-50%, -50%) rotateY(360deg); }
     }
   </style>
 </head>
 <body>
+
+<div id="cylinder"></div>
 
 <script>
   const texts = [
@@ -57,36 +54,53 @@
     "Em là lý do để anh mỉm cười mỗi ngày."
   ];
 
-  function randomColor() {
+  const cylinder = document.getElementById('cylinder');
+  const radius = 200;
+  let isOpen = false;
+
+  function createCylinder() {
+    cylinder.innerHTML = '';
+    texts.forEach((text, i) => {
+      const div = document.createElement('div');
+      div.className = 'text';
+      div.innerText = text;
+
+      const angle = (360 / texts.length) * i;
+      div.style.transform = `rotateY(${angle}deg) translateZ(${radius}px) translateY(${i * 10}px)`;
+      div.style.color = getRandomColor();
+      cylinder.appendChild(div);
+    });
+  }
+
+  function openCylinder() {
+    const children = cylinder.children;
+    for (let i = 0; i < children.length; i++) {
+      children[i].style.transform = `rotateY(0deg) translateZ(0px) translateY(${i * 50 - 250}px)`;
+      children[i].style.opacity = 1;
+    }
+  }
+
+  function closeCylinder() {
+    const children = cylinder.children;
+    for (let i = 0; i < children.length; i++) {
+      const angle = (360 / texts.length) * i;
+      children[i].style.transform = `rotateY(${angle}deg) translateZ(${radius}px) translateY(${i * 10}px)`;
+      children[i].style.opacity = 1;
+    }
+  }
+
+  function getRandomColor() {
     const colors = ['#ffccff', '#ff99cc', '#ccffff', '#ffffcc', '#ffccee', '#ccffcc', '#99ccff'];
     return colors[Math.floor(Math.random() * colors.length)];
   }
 
-  function createText() {
-    const text = document.createElement('div');
-    text.className = 'text';
-    text.innerText = texts[Math.floor(Math.random() * texts.length)];
-    text.style.left = Math.random() * window.innerWidth + 'px';
-    text.style.top = Math.random() * window.innerHeight + 'px';
-    text.style.color = randomColor();
-    text.style.fontSize = (16 + Math.random() * 14) + 'px';
-    text.style.animationDuration = (5 + Math.random() * 5) + 's';
-    document.body.appendChild(text);
-    setTimeout(() => text.remove(), 10000);
-  }
+  createCylinder();
 
-  function createHeart() {
-    const heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.innerText = '❤';
-    heart.style.left = Math.random() * window.innerWidth + 'px';
-    heart.style.fontSize = (12 + Math.random() * 12) + 'px';
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 6000);
-  }
-
-  setInterval(createText, 700);
-  setInterval(createHeart, 300);
+  // Đổi trạng thái mở / đóng trụ mỗi 5s
+  setInterval(() => {
+    isOpen = !isOpen;
+    isOpen ? openCylinder() : closeCylinder();
+  }, 5000);
 </script>
 
 </body>
