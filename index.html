@@ -2,87 +2,162 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>5 Câu Tỏ Tình</title>
+  <title>Tình yêu và sao rơi ✨💖</title>
   <style>
-    body {
-      background: #1a1a2e;
-      color: yellow; /* màu nổi bật */
-      overflow: hidden;
-      margin: 0;
-      height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
-      position: relative;
+    body, html {
+      margin: 0; padding: 0; overflow: hidden; background: midnightblue;
+      width: 100vw; height: 100vh;
+      display: flex; justify-content: center; align-items: center;
     }
-
-    .falling-text {
-      position: absolute;
-      white-space: nowrap;
-      font-size: 24px;
-      animation-name: fall;
-      animation-timing-function: linear;
-      opacity: 0;
-      animation-fill-mode: forwards;
-      z-index: 10;
-      background-color: rgba(255, 255, 255, 0.1); /* nền nhạt cho dễ nhìn */
-      padding: 2px 6px;
-      border-radius: 4px;
-      user-select: none;
-      pointer-events: none;
+    canvas {
+      display: block;
+      background: midnightblue;
     }
-
-    @keyframes fall {
-      0% {
-        top: -50px;
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      100% {
-        top: 100%;
-        opacity: 0;
-      }
-    }
-
-    .layer1 { animation-duration: 6s; animation-delay: 0s; }
-    .layer2 { animation-duration: 7s; animation-delay: 1s; }
-    .layer3 { animation-duration: 8s; animation-delay: 2s; }
-    .layer4 { animation-duration: 6s; animation-delay: 3s; }
-    .layer5 { animation-duration: 7s; animation-delay: 4s; }
-    .layer6 { animation-duration: 9s; animation-delay: 5s; }
   </style>
 </head>
 <body>
+  <canvas id="canvas"></canvas>
+
   <script>
-    const messages = [
-      "địt bà mày  💖",
-      "địt cụ mày 🌌",
-      " ăn lồn nhé  😊",
-      "có cái đầu buồi tao nek  🍃",
-      "cút con mẹ mày đi  ❤️"
-    ];
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
-    const layers = ['layer1', 'layer2', 'layer3', 'layer4', 'layer5', 'layer6'];
+    // Resize canvas full window
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
-    function createFallingText(text, layer) {
-      console.log("Tạo chữ rơi:", text, "lớp:", layer);
-      const span = document.createElement('span');
-      span.className = `falling-text ${layer}`;
-      span.style.left = Math.random() * (window.innerWidth - 200) + 'px';
-      span.style.top = '-50px';
-      span.innerText = text;
-      document.body.appendChild(span);
-
-      span.addEventListener('animationend', () => {
-        span.remove();
-      });
+    // Vẽ trái tim lớn
+    function drawHeart(x, y, size) {
+      ctx.save();
+      ctx.fillStyle = 'red';
+      ctx.beginPath();
+      const topCurveHeight = size * 0.3;
+      ctx.moveTo(x, y + topCurveHeight);
+      // trái
+      ctx.bezierCurveTo(
+        x, y,
+        x - size / 2, y,
+        x - size / 2, y + topCurveHeight
+      );
+      // đáy trái
+      ctx.bezierCurveTo(
+        x - size / 2, y + (size + topCurveHeight) / 2,
+        x, y + (size + topCurveHeight) / 1.5,
+        x, y + size
+      );
+      // đáy phải
+      ctx.bezierCurveTo(
+        x, y + (size + topCurveHeight) / 1.5,
+        x + size / 2, y + (size + topCurveHeight) / 2,
+        x + size / 2, y + topCurveHeight
+      );
+      // phải
+      ctx.bezierCurveTo(
+        x + size / 2, y,
+        x, y,
+        x, y + topCurveHeight
+      );
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
 
-    setInterval(() => {
-      const message = messages[Math.floor(Math.random() * messages.length)];
-      const layer = layers[Math.floor(Math.random() * layers.length)];
-      createFallingText(message, layer);
-    }, 1000);
+    // Tạo ngôi sao nhỏ lung linh
+    class Star {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = 1 + Math.random() * 2;
+        this.opacity = Math.random();
+        this.twinkleSpeed = 0.02 + Math.random() * 0.03;
+        this.opacityDirection = Math.random() < 0.5 ? 1 : -1;
+      }
+      draw() {
+        ctx.save();
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity.toFixed(2)})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        this.opacity += this.twinkleSpeed * this.opacityDirection;
+        if (this.opacity <= 0) {
+          this.opacity = 0;
+          this.opacityDirection *= -1;
+        } else if (this.opacity >= 1) {
+          this.opacity = 1;
+          this.opacityDirection *= -1;
+        }
+      }
+    }
+
+    // Sao băng
+    class ShootingStar {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height / 2;
+        this.len = 100 + Math.random() * 100;
+        this.speed = 8 + Math.random() * 4;
+        this.size = 2 + Math.random() * 2;
+        this.active = true;
+      }
+      update() {
+        this.x += this.speed;
+        this.y += this.speed * 0.5;
+        if (this.x > canvas.width || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 255, 200, 0.8)';
+        ctx.lineWidth = this.size;
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.len, this.y - this.len * 0.5);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Tạo các sao và sao băng
+    const stars = [];
+    const shootingStars = [];
+    for (let i = 0; i < 100; i++) stars.push(new Star());
+    for (let i = 0; i < 5; i++) shootingStars.push(new ShootingStar());
+
+    // Vòng animation
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Vẽ trái tim ở giữa
+      drawHeart(canvas.width / 2, canvas.height / 2 - 100, 200);
+
+      // Vẽ sao nhỏ lung linh
+      stars.forEach(star => {
+        star.draw();
+      });
+
+      // Vẽ sao băng
+      shootingStars.forEach(s => {
+        s.update();
+        s.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
   </script>
 </body>
 </html>
