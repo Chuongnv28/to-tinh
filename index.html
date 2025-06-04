@@ -6,9 +6,83 @@
   <style>
     body {
       background: #1a1a2e;
-      color: white;
+      color: yellow; /* màu nổi bật */
       overflow: hidden;
       margin: 0;
       height: 100vh;
       font-family: 'Segoe UI', sans-serif;
-      position:
+      position: relative;
+    }
+
+    .falling-text {
+      position: absolute;
+      white-space: nowrap;
+      font-size: 24px;
+      animation-name: fall;
+      animation-timing-function: linear;
+      opacity: 0;
+      animation-fill-mode: forwards;
+      z-index: 10;
+      background-color: rgba(255, 255, 255, 0.1); /* nền nhạt cho dễ nhìn */
+      padding: 2px 6px;
+      border-radius: 4px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      0% {
+        top: -50px;
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        top: 100%;
+        opacity: 0;
+      }
+    }
+
+    .layer1 { animation-duration: 6s; animation-delay: 0s; }
+    .layer2 { animation-duration: 7s; animation-delay: 1s; }
+    .layer3 { animation-duration: 8s; animation-delay: 2s; }
+    .layer4 { animation-duration: 6s; animation-delay: 3s; }
+    .layer5 { animation-duration: 7s; animation-delay: 4s; }
+    .layer6 { animation-duration: 9s; animation-delay: 5s; }
+  </style>
+</head>
+<body>
+  <script>
+    const messages = [
+      "Anh yêu em từ cái nhìn đầu tiên 💖",
+      "Không có em, anh như mất phương hướng 🌌",
+      "Em là lý do khiến anh mỉm cười mỗi ngày 😊",
+      "Ở cạnh em, anh cảm thấy bình yên đến lạ 🍃",
+      "Cho anh một cơ hội để yêu em nhé ❤️"
+    ];
+
+    const layers = ['layer1', 'layer2', 'layer3', 'layer4', 'layer5', 'layer6'];
+
+    function createFallingText(text, layer) {
+      console.log("Tạo chữ rơi:", text, "lớp:", layer);
+      const span = document.createElement('span');
+      span.className = `falling-text ${layer}`;
+      span.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+      span.style.top = '-50px';
+      span.innerText = text;
+      document.body.appendChild(span);
+
+      span.addEventListener('animationend', () => {
+        span.remove();
+      });
+    }
+
+    setInterval(() => {
+      const message = messages[Math.floor(Math.random() * messages.length)];
+      const layer = layers[Math.floor(Math.random() * layers.length)];
+      createFallingText(message, layer);
+    }, 1000);
+  </script>
+</body>
+</html>
