@@ -1,163 +1,93 @@
+<!-- Chạy ngay không cần gì thêm -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Tình yêu và sao rơi ✨💖</title>
+  <meta charset="UTF-8">
+  <title>Hiệu Ứng Text Tình Yêu</title>
   <style>
-    body, html {
-      margin: 0; padding: 0; overflow: hidden; background: midnightblue;
-      width: 100vw; height: 100vh;
-      display: flex; justify-content: center; align-items: center;
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
     }
-    canvas {
-      display: block;
-      background: midnightblue;
+
+    .text {
+      position: absolute;
+      white-space: nowrap;
+      font-size: 20px;
+      font-weight: bold;
+      animation: floatText 10s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes floatText {
+      0% { transform: translateY(100vh) scale(1); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+    }
+
+    .heart {
+      position: absolute;
+      color: pink;
+      font-size: 16px;
+      animation: fall 6s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(100vh) scale(0.8); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
 
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+<script>
+  const texts = [
+    "Em chính là định mệnh của đời anh.",
+    "Gặp em là điều tuyệt vời nhất.",
+    "Anh không cần gì nhiều, chỉ cần em.",
+    "Chỉ cần em gật đầu, anh sẽ đến bên em ngay.",
+    "Từ khi có em, thế giới anh rực rỡ hẳn lên.",
+    "Mỗi lần nhìn em, tim anh lại loạn nhịp.",
+    "Chúng ta sinh ra là để dành cho nhau.",
+    "Anh ước được bên em mãi mãi.",
+    "Trái tim anh đã thuộc về em.",
+    "Em là lý do để anh mỉm cười mỗi ngày."
+  ];
 
-    // Resize canvas full window
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+  function randomColor() {
+    const colors = ['#ffccff', '#ff99cc', '#ccffff', '#ffffcc', '#ffccee', '#ccffcc', '#99ccff'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
 
-    // Vẽ trái tim lớn
-    function drawHeart(x, y, size) {
-      ctx.save();
-      ctx.fillStyle = 'red';
-      ctx.beginPath();
-      const topCurveHeight = size * 0.3;
-      ctx.moveTo(x, y + topCurveHeight);
-      // trái
-      ctx.bezierCurveTo(
-        x, y,
-        x - size / 2, y,
-        x - size / 2, y + topCurveHeight
-      );
-      // đáy trái
-      ctx.bezierCurveTo(
-        x - size / 2, y + (size + topCurveHeight) / 2,
-        x, y + (size + topCurveHeight) / 1.5,
-        x, y + size
-      );
-      // đáy phải
-      ctx.bezierCurveTo(
-        x, y + (size + topCurveHeight) / 1.5,
-        x + size / 2, y + (size + topCurveHeight) / 2,
-        x + size / 2, y + topCurveHeight
-      );
-      // phải
-      ctx.bezierCurveTo(
-        x + size / 2, y,
-        x, y,
-        x, y + topCurveHeight
-      );
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    }
+  function createText() {
+    const text = document.createElement('div');
+    text.className = 'text';
+    text.innerText = texts[Math.floor(Math.random() * texts.length)];
+    text.style.left = Math.random() * window.innerWidth + 'px';
+    text.style.top = Math.random() * window.innerHeight + 'px';
+    text.style.color = randomColor();
+    text.style.fontSize = (16 + Math.random() * 14) + 'px';
+    text.style.animationDuration = (5 + Math.random() * 5) + 's';
+    document.body.appendChild(text);
+    setTimeout(() => text.remove(), 10000);
+  }
 
-    // Tạo ngôi sao nhỏ lung linh
-    class Star {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = 1 + Math.random() * 2;
-        this.opacity = Math.random();
-        this.twinkleSpeed = 0.02 + Math.random() * 0.03;
-        this.opacityDirection = Math.random() < 0.5 ? 1 : -1;
-      }
-      draw() {
-        ctx.save();
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity.toFixed(2)})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.innerText = '❤';
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.fontSize = (12 + Math.random() * 12) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }
 
-        this.opacity += this.twinkleSpeed * this.opacityDirection;
-        if (this.opacity <= 0) {
-          this.opacity = 0;
-          this.opacityDirection *= -1;
-        } else if (this.opacity >= 1) {
-          this.opacity = 1;
-          this.opacityDirection *= -1;
-        }
-      }
-    }
+  setInterval(createText, 700);
+  setInterval(createHeart, 300);
+</script>
 
-    // Sao băng
-    class ShootingStar {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height / 2;
-        this.len = 100 + Math.random() * 100;
-        this.speed = 8 + Math.random() * 4;
-        this.size = 2 + Math.random() * 2;
-        this.active = true;
-      }
-      update() {
-        this.x += this.speed;
-        this.y += this.speed * 0.5;
-        if (this.x > canvas.width || this.y > canvas.height) {
-          this.reset();
-        }
-      }
-      draw() {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 200, 0.8)';
-        ctx.lineWidth = this.size;
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x - this.len, this.y - this.len * 0.5);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
-
-    // Tạo các sao và sao băng
-    const stars = [];
-    const shootingStars = [];
-    for (let i = 0; i < 100; i++) stars.push(new Star());
-    for (let i = 0; i < 5; i++) shootingStars.push(new ShootingStar());
-
-    // Vòng animation
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Vẽ trái tim ở giữa
-      drawHeart(canvas.width / 2, canvas.height / 2 - 100, 200);
-
-      // Vẽ sao nhỏ lung linh
-      stars.forEach(star => {
-        star.draw();
-      });
-
-      // Vẽ sao băng
-      shootingStars.forEach(s => {
-        s.update();
-        s.draw();
-      });
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-  </script>
 </body>
 </html>
