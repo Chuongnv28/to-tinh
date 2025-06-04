@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Text DNA Helix</title>
+  <title>DNA Spiral Text - Multi Line</title>
   <style>
     body {
       margin: 0;
@@ -20,16 +20,18 @@
       transform: translate(-50%, -50%);
     }
 
-    .text {
+    .char {
       position: absolute;
       color: #fff;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: bold;
       white-space: nowrap;
+      opacity: 0;
       text-shadow:
         0 0 5px #fff,
         0 0 10px #ff00ff,
-        0 0 15px #ff00ff;
+        0 0 20px #ff00ff;
+      transition: opacity 0.4s ease;
     }
   </style>
 </head>
@@ -38,9 +40,9 @@
 <div id="scene"></div>
 
 <script>
-  const texts = [
-    "💖 Em là DNA của đời anh",
-    "Anh yêu em mãi mãi 💞",
+  const scene = document.getElementById("scene");
+
+  const lines = [
     "💫 Gặp em là định mệnh",
     "Tình yêu không có điểm dừng 💘",
     "Chúng ta là mã hóa hoàn hảo 🧬",
@@ -51,30 +53,50 @@
     "Và mãi đến tận cuối chuỗi sống 💓"
   ];
 
-  const scene = document.getElementById("scene");
-  const itemCount = texts.length;
-  const radius = 120;
-  const heightStep = 30;
-  let angle = 0;
+  const radius = 140;
+  const stepY = 30;
+  const delayPerChar = 80;
 
-  // Tạo các text element
-  const items = texts.map((text, i) => {
-    const el = document.createElement('div');
-    el.className = 'text';
-    el.innerText = text;
-    scene.appendChild(el);
-    return el;
+  let chars = [];
+  let totalIndex = 0;
+
+  // 👉 Chuyển từng dòng thành chuỗi ký tự riêng biệt
+  lines.forEach((line, lineIndex) => {
+    line.split("").forEach((char, i) => {
+      const span = document.createElement("div");
+      span.className = "char";
+      span.innerText = char;
+      scene.appendChild(span);
+
+      const charIndex = totalIndex;
+      chars.push(span);
+
+      setTimeout(() => {
+        span.style.opacity = 1;
+      }, charIndex * delayPerChar);
+
+      totalIndex++;
+    });
+
+    // Thêm khoảng trống giữa các dòng
+    const space = document.createElement("div");
+    space.className = "char";
+    space.innerText = " ";
+    chars.push(space);
+    totalIndex += 1;
   });
 
-  // Animate DNA xoắn kép
+  let angle = 0;
+
+  // Animate DNA
   function animate() {
     angle += 0.03;
 
-    items.forEach((el, i) => {
+    chars.forEach((el, i) => {
       const a = angle + i * 0.4;
       const x = Math.sin(a) * radius;
       const z = Math.cos(a) * radius;
-      const y = (i - itemCount / 2) * heightStep;
+      const y = (i - chars.length / 2) * stepY;
 
       el.style.transform = `
         translate3d(${x}px, ${y}px, ${z}px)
