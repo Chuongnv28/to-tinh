@@ -2,46 +2,63 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>DNA Spiral Text - Multi Line</title>
+  <title>Hiệu Ứng Tình Yêu Dày Đặc</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       background: black;
-      overflow: hidden;
+      height: 200vh;
+      overflow-x: hidden;
       font-family: 'Segoe UI', sans-serif;
       perspective: 1000px;
     }
 
-    #scene {
-      position: absolute;
+    .container {
+      position: fixed;
       top: 50%;
       left: 50%;
       transform-style: preserve-3d;
       transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
+      line-height: 1;
     }
 
     .char {
-      position: absolute;
-      color: #fff;
+      display: block;
       font-size: 28px;
       font-weight: bold;
-      white-space: nowrap;
       opacity: 0;
+      transform: translateY(0);
+      white-space: pre;
       text-shadow:
         0 0 5px #fff,
         0 0 10px #ff00ff,
         0 0 20px #ff00ff;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+    }
+
+    .heart {
+      position: fixed;
+      font-size: 16px;
+      color: #ff69b4;
+      animation: float 6s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
     }
   </style>
 </head>
 <body>
 
-<div id="scene"></div>
+<div class="container" id="container"></div>
 
 <script>
-  const scene = document.getElementById("scene");
-
   const lines = [
     "💫 Gặp em là định mệnh",
     "Tình yêu không có điểm dừng 💘",
@@ -53,61 +70,49 @@
     "Và mãi đến tận cuối chuỗi sống 💓"
   ];
 
-  const radius = 140;
-  const stepY = 30;
-  const delayPerChar = 80;
+  const container = document.getElementById('container');
+  let delay = 0;
 
-  let chars = [];
-  let totalIndex = 0;
-
-  // 👉 Chuyển từng dòng thành chuỗi ký tự riêng biệt
   lines.forEach((line, lineIndex) => {
     line.split("").forEach((char, i) => {
-      const span = document.createElement("div");
+      const span = document.createElement("span");
       span.className = "char";
-      span.innerText = char;
-      scene.appendChild(span);
-
-      const charIndex = totalIndex;
-      chars.push(span);
+      span.textContent = char;
 
       setTimeout(() => {
         span.style.opacity = 1;
-      }, charIndex * delayPerChar);
+        span.style.transform = `translateY(${i * 4}px)`; // nhỏ hơn để chữ dày
+      }, delay);
 
-      totalIndex++;
+      delay += 45; // nhanh hơn
+      container.appendChild(span);
     });
 
-    // Thêm khoảng trống giữa các dòng
-    const space = document.createElement("div");
-    space.className = "char";
-    space.innerText = " ";
-    chars.push(space);
-    totalIndex += 1;
+    // Xuống dòng giữa các câu
+    const br = document.createElement("br");
+    container.appendChild(br);
+    delay += 200; // ngắt nhẹ giữa câu
   });
 
-  let angle = 0;
-
-  // Animate DNA
-  function animate() {
-    angle += 0.03;
-
-    chars.forEach((el, i) => {
-      const a = angle + i * 0.4;
-      const x = Math.sin(a) * radius;
-      const z = Math.cos(a) * radius;
-      const y = (i - chars.length / 2) * stepY;
-
-      el.style.transform = `
-        translate3d(${x}px, ${y}px, ${z}px)
-        rotateY(${a * 2}rad)
-      `;
-    });
-
-    requestAnimationFrame(animate);
+  // Tim rơi
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.textContent = '❤';
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.top = window.innerHeight + 'px';
+    heart.style.fontSize = (12 + Math.random() * 16) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
   }
 
-  animate();
+  setInterval(createHeart, 250); // nhiều tim hơn
+
+  // Hiệu ứng 3D khi scroll
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    container.style.transform = `translate(-50%, -50%) rotateX(${scrollY * 0.1}deg) rotateY(${scrollY * 0.05}deg) scale(${1 + scrollY * 0.001})`;
+  });
 </script>
 
 </body>
